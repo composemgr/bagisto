@@ -50,9 +50,9 @@ See `docker-compose.yaml` for complete list of configurable options.
 
 ## 📂 Volumes
 
-- `./rootfs/data/bagisto` - Data storage
-- `./rootfs/config/bagisto` - Data storage
-- `./rootfs/data/db/mariadb/bagisto` - Data storage
+- `./volumes/data/bagisto` - Data storage
+- `./volumes/config/bagisto` - Data storage
+- `./volumes/data/db/mariadb/bagisto` - Data storage
 
 ## 🔐 Security
 
