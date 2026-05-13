@@ -34,8 +34,8 @@ services:
       ADMIN_PASSWORD: ${APP_ADMIN_PASS:-changeme_admin_password}
       MAIL_HOST: ${EMAIL_SERVER_HOST:-172.17.0.1}
       MAIL_PORT: ${EMAIL_SERVER_PORT:-587}
-      MAIL_USERNAME: ${EMAIL_SERVER_USER:-}
-      MAIL_PASSWORD: ${EMAIL_SERVER_PASS:-}
+      MAIL_USERNAME: ${EMAIL_SERVER_LOGIN_NAME:-}
+      MAIL_PASSWORD: ${EMAIL_SERVER_LOGIN_PASS:-}
     volumes:
       - ./volumes/data/bagisto:/var/www/html/storage
     depends_on:
