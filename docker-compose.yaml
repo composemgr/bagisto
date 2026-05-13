@@ -15,12 +15,32 @@ services:
     hostname: ${BASE_HOST_NAME:-$HOSTNAME}
     restart: always
     logging: *default-logging
+    labels:
+      - 'traefik.enable=true'
+      - 'cloudflare.enable=true'
+      - 'traefik.docker.network=proxy'
+      - 'cloudflare.service=http://bagisto-app:80'
+      - 'cloudflare.hostname=bagisto.${CLOUDFLARE_ZONE_NAME:-}'
+      - 'traefik.http.routers.bagisto-app.entrypoints=http'
+      - 'traefik.http.routers.bagisto-app-secure.tls=true'
+      - 'traefik.http.routers.bagisto-app.rule=Host($(${BASE_HOST_NAME:-$HOSTNAME}))'
+      - 'traefik.http.middlewares.bagisto-app-https-redirect.redirectscheme.scheme=https'
+      - 'traefik.http.routers.bagisto-app.middlewares=bagisto-app-https-redirect'
+      - 'traefik.http.routers.bagisto-app-secure.entrypoints=https'
+      - 'traefik.http.routers.bagisto-app-secure.rule=Host($(${BASE_HOST_NAME:-$HOSTNAME}))'
+      - 'traefik.http.routers.bagisto-app-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.bagisto-app-secure.service=bagisto-app'
+      - 'traefik.http.services.bagisto-app.loadbalancer.server.port=80'
     networks:
       - bagisto
+      - proxy
+      - cloudflare
     ports:
       - "172.17.0.1:8082:80"
     environment:
       TZ: ${TZ:-America/New_York}
+      CONTAINER_NAME: bagisto-app
+      HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
       APP_URL: https://${BASE_HOST_NAME:-$HOSTNAME}
       APP_KEY: ${APP_SECRET_KEY:-changeme_secret_key_min_32_chars}
       DB_CONNECTION: mysql
@@ -58,6 +78,7 @@ services:
       - bagisto
     environment:
       TZ: ${TZ:-America/New_York}
+      CONTAINER_NAME: bagisto-db
       MARIADB_DATABASE: ${DB_CREATE_DATABASE_NAME:-bagisto}
       MARIADB_USER: ${DB_USER_NAME:-bagisto}
       MARIADB_PASSWORD: ${DB_USER_PASS:-changeme_db_password}
@@ -73,3 +94,7 @@ services:
 networks:
   bagisto:
     external: false
+  proxy:
+    external: true
+  cloudflare:
+    external: true
